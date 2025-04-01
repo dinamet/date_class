@@ -106,7 +106,14 @@ class Date {
         return Math.abs(this.toDays() - otherDate.toDays());
     }
 
-
+    // Method for displaying date
+    public void printDate() {
+        String[] monthNames = {
+                "", "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+        };
+        System.out.println(monthNames[month] + " " + day + ", " + year);
+    }
 
     void Display() {
         System.out.println(this.day + " " + this.month + " " + this.year);
@@ -119,8 +126,11 @@ class Date {
 public class Main {
     public static void main(String[] args) {
         Date d1 = new Date(27,03, 2025);
+        Date d2 = new Date(01, 04, 2025);
 
         System.out.println(d1);
+        System.out.println(d1 + " is " + d1.getDayOfWeek());
+        System.out.println("Difference in days: " + d1.calculateDifference(d2));
 
     }
 }
