@@ -1,32 +1,35 @@
+import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Collections;
 
-class Date {
+class Date implements Comparable<Date> {
     int day;
     int month;
     int year;
 
-    // constructor with parameters
+    // Constructor with parameters
     Date(int day, int month, int year) {
         this.day = day;
         this.month = month;
         this.year = year;
     }
 
-    // constructor without parameters
+    // Constructor without parameters
     Date() {
 
     }
 
-    // method for checking leap year
+    // Method for checking leap year
     private boolean isLeapYear ( int year){
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
 
-    // method for checking validation of date
-    private boolean isValidDate(int day, int month, int year) {
+    // Method for checking validation of date
+    public boolean isValidDate(int day, int month, int year) {
         if (year < 1) return false;
         if (month < 1 || month > 12) return false;
 
-        // quantity of days in each month
+        // Quantity of days in each month
         int[] daysInMonth = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
         if (isLeapYear(year)) {
@@ -36,7 +39,7 @@ class Date {
         return day >= 1 && day <= daysInMonth[month];
     }
 
-    // method for updating date
+    // Method for updating date
     public void updateDate(int day, int month, int year) {
         if (isValidDate(day, month, year)) {
             this.day = day;
@@ -49,28 +52,16 @@ class Date {
         }
     }
 
-    // Determining day of week using Zeller's formula
+    // Method for determining the day of the week
     public String getDayOfWeek() {
-        int d = day;
-        int m = month;
-        int y = year;
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month - 1, day); // In Calendar, months start at 0 (January = 0)
 
-        // January and February are considered the 13th and 14th months of previous year.
-        if (m == 1 || m == 2) {
-            m += 12;
-            y -= 1;
-        }
+        String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-        int K = y % 100;  // the last two digits of year
-        int J = y / 100;  // the first two digits of year
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK); // Get day of week (1 = Sunday, 2 = Monday, etc.)
 
-        // Zeller's formula
-        int h = (d + (13 * (m + 1)) / 5 + K + (K / 4) + (J / 4) + (5 * J)) % 7;
-
-        // Days of the week (0 = Saturday, 1 = Sunday, 2 = Monday, 3 = Tuesday, 4 = Wednesday, 5 = Thursday, 6 = Friday)
-        String[] days = {"Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
-
-        return days[h];
+        return days[dayOfWeek - 1];
     }
 
     // Method for calculating the number of days
@@ -115,22 +106,109 @@ class Date {
         System.out.println(monthNames[month] + " " + day + ", " + year);
     }
 
-    void Display() {
-        System.out.println(this.day + " " + this.month + " " + this.year);
+
+    // Method to convert object to string
+    @Override
+    public String toString() {
+        return day + "/" + month + "/" + year;
     }
 
-
+    // Method for comparing dates (sorting)
+    @Override
+    public int compareTo(Date other) {
+        // Comparing years
+        if (this.year != other.year) {
+            return this.year - other.year;
+        }
+        // if years are same, comparing months
+        if (this.month != other.month) {
+            return this.month - other.month;
+        }
+        // If months are same, comparing days
+        return this.day - other.day;
+    }
 
 }
 
+
 public class Main {
     public static void main(String[] args) {
-        Date d1 = new Date(27,03, 2025);
-        Date d2 = new Date(01, 04, 2025);
+        // 1.Creating valid and invalid Date objects
+        Date d1 = new Date(27, 3, 2025);
+        Date d2 = new Date(22, 7, 2024);
+        Date d3 = new Date(7, 9, 2023);
 
-        System.out.println(d1);
-        System.out.println(d1 + " is " + d1.getDayOfWeek());
-        System.out.println("Difference in days: " + d1.calculateDifference(d2));
+        Date d4 = new Date(29, 2, 2025);
+        Date d5 = new Date(0, 4, 2025);
+        Date d6 = new Date(17, 13, 2024);
 
+        // 2.Checking correct and incorrect dates
+        System.out.println("Valid Dates:");
+        d1.printDate();
+        d2.printDate();
+        d3.printDate();
+
+        System.out.println();
+
+        System.out.println("Invalid Dates (Should print error messages):");
+        // Checking for incorrect dates
+        if (!d4.isValidDate(d4.day, d4.month, d4.year)) {
+            System.out.println("Invalid date: " + d4);
+        }
+        if (!d5.isValidDate(d5.day, d5.month, d5.year)) {
+            System.out.println("Invalid date: " + d5);
+        }
+        if (!d6.isValidDate(d6.day, d6.month, d6.year)) {
+            System.out.println("Invalid date: " + d6);
+        }
+
+        System.out.println();
+
+        // 3.Date update (attempt to update incorrect date)
+        System.out.println("Updating Dates: ");
+        d4.updateDate(28, 2, 2025);
+        d5.updateDate(1, 4, 2025);
+        d6.updateDate(17, 12, 2024);
+
+        System.out.println();
+
+        // Displaying updated dates
+        System.out.println("Updated Dates: ");
+        d4.printDate();
+        d5.printDate();
+        d6.printDate();
+
+        System.out.println();
+
+        // 4.Print day of the week
+        System.out.println("Day of the Week for d1:");
+        System.out.println(d1.getDayOfWeek());
+
+        System.out.println();
+
+        // 5.Difference between dates
+        Date d7 = new Date(1, 5, 2024); // Create another date to calculate the difference
+        System.out.println("Difference between d1 and d7 in days:");
+        System.out.println(d1.calculateDifference(d7));
+
+        // 6.Sorting the Date list
+        ArrayList<Date> dates = new ArrayList<>();
+        dates.add(d1);
+        dates.add(d2);
+        dates.add(d3);
+        dates.add(d4);
+        dates.add(d5);
+        dates.add(d6);
+
+        // Sorting the list of dates
+        Collections.sort(dates);
+
+        System.out.println();
+
+        // 7.Printing sorted dates
+        System.out.println("Sorted Dates:");
+        for (Date date : dates) {
+            date.printDate(); // Sorted dates by year, month and day
+        }
     }
 }
